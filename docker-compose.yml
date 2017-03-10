@@ -1,0 +1,51 @@
+version: '2'
+services:
+    nginx:
+        build: 
+            context: .
+            dockerfile: dockerfile.nginx
+        ports:
+            - "80:80"
+        volumes:
+            - /dockerlogs/nginx:/var/log/nginx
+        networks:
+            - frontend
+        depends_on:
+            - iglucoams
+    pushstatistics:
+        build:
+            context: .
+            dockerfile: dockerfile.pushstatistics
+        volumes:
+            - /data/pushstatistics/:/data/pushstatistics/
+            - /dockerlogs/pushstatistics/:/root/.pm2/logs/
+        networks:
+            - pushstatistics
+        depends_on:
+            - iglucoams
+    iglucoams:
+        build:
+            context: .
+            dockerfile: dockerfile.iglucoams
+        volumes:
+            - /data/iglucoams/:/data/iglucoams/
+            - /dockerlogs/iglucoams/:/root/.pm2/logs/
+        networks:
+            - pushstatistics
+            - frontend
+            - backend
+        depends_on:
+            - mongodb
+    mongodb:
+        build:
+            context: .
+            dockerfile: dockerfile.mongodb
+        volumes:
+            - /dockerlogs/mongodb/:/var/log/mongodb/
+            - /var/lib/mongodb/:/var/lib/mongodb/
+        networks:
+            - backend
+networks:
+    frontend:
+    backend:
+    pushstatistics:
