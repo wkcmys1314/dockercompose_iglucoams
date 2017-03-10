@@ -1,0 +1,16 @@
+#do not config the users
+FROM wangkai/mongodb_bs_2.4.9
+MAINTAINER kai/wkcmys@126.com
+#COPY mongodb /usr/src/mongodb/
+COPY stopmongo /usr/src/
+RUN echo "config the db" \
+    #&& mkdir -p /data/iglucoams/dump \
+    #&& cp -rf /usr/src/mongodb/* /var/lib/mongodb/ \
+    && mongod -f /etc/mongodb.conf --fork \
+    && sed '/bind_ip/'d /etc/mongodb.conf > /etc/mongodb.conf.bk \
+    && mv /etc/mongodb.conf.bk /etc/mongodb.conf \
+    && echo 'auth = true' >> /etc/mongodb.conf \
+    && sh /usr/src/stopmongodb.sh \
+    && rm -rf /usr/src/mongodb/* \
+    && rm -rf /usr/src/stopmongodb.sh 
+CMD mongod -f /etc/mongodb.conf --fork && tail -f /var/log/mongodb/mongodb.log

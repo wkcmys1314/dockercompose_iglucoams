@@ -1,0 +1,5 @@
+#dockerfile
+FROM wangkai/node_bs_0.10.45
+MAINTAINER wangkai/wkcmys@126.com
+COPY config /usr/src/
+CMD sh /usr/src/start_pushstatistics.sh && pm2 log PushStDatas
